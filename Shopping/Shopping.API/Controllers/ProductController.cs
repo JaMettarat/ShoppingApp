@@ -30,7 +30,9 @@ namespace Shopping.API.Controllers
                             .Products
                             .Find(p => true)
                             .ToListAsync();
-        }
+
+            //return ProductContext.GetPreconfiguredProducts();
+        }        
 
     }
 }

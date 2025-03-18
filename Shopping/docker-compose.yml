@@ -1,5 +1,3 @@
-version: '3.4'
-
 services:
   shopping.api:
     image: ${DOCKER_REGISTRY-}shoppingapi
@@ -15,3 +13,4 @@ services:
 
   shopping.db:
     image: mongo
+

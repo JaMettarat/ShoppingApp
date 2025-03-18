@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Shopping.Client.Data;
 using Shopping.Client.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -25,13 +23,12 @@ namespace Shopping.Client.Controllers
 
         public async Task<IActionResult> Index()
         {
-            //var response = await _httpClient.GetAsync("/product");
-            //var content = await response.Content.ReadAsStringAsync();
-            //var productList = JsonConvert.DeserializeObject<IEnumerable<Product>>(content);
+            var response = await _httpClient.GetAsync("/product");
+            var content = await response.Content.ReadAsStringAsync();
+            var productList = JsonConvert.DeserializeObject<IEnumerable<Product>>(content);
 
-            //return View(productList);
-            //return View(new List<Product>());
-            return View(ProductContext.Products);
+            return View(productList);
+            //return View(ProductContext.Products);
         }
 
         public IActionResult Privacy()
