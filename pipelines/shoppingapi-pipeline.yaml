@@ -77,7 +77,7 @@ stages:
                   inputs:
                     action: deploy
                     manifests: |
-                      $(Pipeline.Workspace)/aks/shoppingapi.yml
+                      $(Pipeline.Workspace)/aks/shoppingapi.yaml
                     imagePullSecrets: |
                       $(imagePullSecret)
                     containers: |
