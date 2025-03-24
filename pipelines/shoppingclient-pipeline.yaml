@@ -1,0 +1,84 @@
+# Deploy to Azure Kubernetes Service
+# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - Shopping/Shopping.Client/*
+      - aks/shoppingclient.yaml
+
+resources:
+  - repo: self
+
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: "dafad70a-728a-44a5-b875-04b2593ea8ed"
+  imageRepository: "shoppingclient"
+  containerRegistry: "shoppingappacr.azurecr.io"
+  dockerfilePath: "**/Dockerfile"
+  tag: "$(Build.BuildId)"
+  imagePullSecret: "shoppingappacr34271b85-auth"
+
+  # Agent VM image name
+  vmImageName: "ubuntu-latest"
+
+stages:
+  - stage: Build
+    displayName: Build stage
+    jobs:
+      - job: Build
+        displayName: Build
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - task: Docker@2
+            displayName: Build and push an image to container registry
+            inputs:
+              command: buildAndPush
+              repository: $(imageRepository)
+              dockerfile: $(dockerfilePath)
+              containerRegistry: $(dockerRegistryServiceConnection)
+              buildContext: $(Build.SourcesDirectory)/Shopping
+              tags: |
+                $(tag)
+
+          # - upload: manifests
+          #   artifact: manifests
+          - upload: aks
+            artifact: aks
+
+  - stage: Deploy
+    displayName: Deploy stage
+    dependsOn: Build
+
+    jobs:
+      - deployment: Deploy
+        displayName: Deploy
+        pool:
+          vmImage: $(vmImageName)
+        environment: "JaMettaratShoppingApp.default"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: KubernetesManifest@0
+                  displayName: Create imagePullSecret
+                  inputs:
+                    action: createSecret
+                    secretName: $(imagePullSecret)
+                    dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+
+                - task: KubernetesManifest@0
+                  displayName: Deploy to Kubernetes cluster
+                  inputs:
+                    action: deploy
+                    manifests: |
+                      $(Pipeline.Workspace)/aks/shoppingclient.yaml
+                    imagePullSecrets: |
+                      $(imagePullSecret)
+                    containers: |
+                      $(containerRegistry)/$(imageRepository):$(tag)
