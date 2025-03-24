@@ -3,3 +3,5 @@ Deploying .Net Microservices to Azure Kubernetes Services(AKS) and Automating wi
 
 [![Build Status](https://dev.azure.com/KitiyaMettarat/shopping/_apis/build/status%2Fshoppingclient-pipeline?branchName=main)](https://dev.azure.com/KitiyaMettarat/shopping/_build/latest?definitionId=12&branchName=main)
 
+[![Build Status](https://dev.azure.com/KitiyaMettarat/shopping/_apis/build/status%2Fshoppingapi-pipeline?branchName=main)](https://dev.azure.com/KitiyaMettarat/shopping/_build/latest?definitionId=11&branchName=main)
+
